@@ -40,7 +40,7 @@ export const teamEstimationSchema = z.object({
           end: z.number(),
         })
         .refine((data) => data.start <= data.end, {
-          message: "Start must be less than End",
+          message: "Start sprint must be less than End sprint",
           path: ["start"],
         })
     )

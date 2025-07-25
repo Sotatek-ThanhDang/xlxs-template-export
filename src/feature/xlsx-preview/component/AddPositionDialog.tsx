@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  Form,
   FormControl,
   FormDescription,
   FormField,
@@ -19,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useForm, useFieldArray, Form } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { SPRINT_COLOR } from "../constants/sprintColor";
 import {
   type XlxsDownload,
@@ -37,6 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { convertToOrdinal } from "@/lib/formatter";
 
 type AddPositionDialogProps = {
   xlsxSettings: XlxsDownload;
@@ -153,7 +155,7 @@ export default function AddPositionDialog({
               name="clientResponsibility"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sotatek responsibility</FormLabel>
+                  <FormLabel>Client responsibility</FormLabel>
                   <FormControl>
                     <ToggleGroup
                       type="single"
@@ -188,6 +190,7 @@ export default function AddPositionDialog({
                   <FormLabel>Man month</FormLabel>
                   <FormControl>
                     <Input
+                      min={0}
                       type="number"
                       placeholder="Please enter man month"
                       {...field}
@@ -218,12 +221,6 @@ export default function AddPositionDialog({
                   + Add Process
                 </Button>
               </div>
-              {/* Show error message if teamEstimation array is empty and touched */}
-              {popupForm.formState.errors.process && (
-                <ErrorMessage className="mb-2">
-                  {popupForm.formState.errors.process.message?.toString()}
-                </ErrorMessage>
-              )}
 
               {processFields.map((field, idx) => (
                 <div
@@ -272,18 +269,33 @@ export default function AddPositionDialog({
                     name={`process.${idx}.start`}
                     render={({ field }) => {
                       return (
-                        <FormItem className="w-[100px]">
+                        <FormItem className="w-[150px]">
                           <FormLabel>Start sprint</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min={0}
-                              max={totalSprint}
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(e.target.valueAsNumber)
+                            <Select
+                              value={String(field.value)}
+                              onValueChange={(value) =>
+                                field.onChange(Number(value))
                               }
-                            />
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select process type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Array.from(
+                                  { length: totalSprint },
+                                  (_, idx) => (
+                                    <SelectItem
+                                      key={idx}
+                                      value={String(idx)}
+                                      className="flex flex-row gap-4 items-center"
+                                    >{`${convertToOrdinal(
+                                      idx
+                                    )} sprint`}</SelectItem>
+                                  )
+                                )}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -295,18 +307,33 @@ export default function AddPositionDialog({
                     name={`process.${idx}.end`}
                     render={({ field }) => {
                       return (
-                        <FormItem className="w-[100px]">
+                        <FormItem className="w-[150px]">
                           <FormLabel>End sprint</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min={0}
-                              max={totalSprint}
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(e.target.valueAsNumber)
+                            <Select
+                              value={String(field.value)}
+                              onValueChange={(value) =>
+                                field.onChange(Number(value))
                               }
-                            />
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select process type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {Array.from(
+                                  { length: totalSprint },
+                                  (_, idx) => (
+                                    <SelectItem
+                                      key={idx}
+                                      value={String(idx)}
+                                      className="flex flex-row gap-4 items-center"
+                                    >{`${convertToOrdinal(
+                                      idx
+                                    )} sprint`}</SelectItem>
+                                  )
+                                )}
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -326,6 +353,13 @@ export default function AddPositionDialog({
                   </div>
                 </div>
               ))}
+
+              {/* Show error message if teamEstimation array is empty and touched */}
+              {popupForm.formState.errors.process && (
+                <ErrorMessage className="mb-2">
+                  {popupForm.formState.errors.process.message?.toString()}
+                </ErrorMessage>
+              )}
             </div>
 
             <DialogFooter>
