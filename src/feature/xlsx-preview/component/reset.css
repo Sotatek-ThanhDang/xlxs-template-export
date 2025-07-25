@@ -1,0 +1,9 @@
+.table-with-rowspan thead tr:first-child th {
+  border-bottom: 0;
+}
+
+.table-header-row-span {
+  @apply flex -translate-y-1/2 items-center justify-between relative;
+  height: 200%;
+  background: inherit;
+}
